@@ -82,7 +82,7 @@ class ErrorFinder {
             });
 
             // Update the status bar
-            this._statusBarItem.text = errorCount !== 1 ? `$(x) ${errorCount} scss-lint errors` : '$(x) 1 scss-lint error';
+            this._statusBarItem.text = errorCount !== 1 ? `$(telescope) ${errorCount} scss-lint errors` : '$(telescope) 1 scss-lint error';
             this._statusBarItem.show();
         } else {
             this._statusBarItem.hide();
