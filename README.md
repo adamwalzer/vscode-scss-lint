@@ -29,6 +29,10 @@ This is the initial release of this extension.
 
 This release fixes an issue with a potential race condition while updating the status bar.
 
+### 0.0.3
+
+This release uses a regex to map the error message to the output.
+
 -----------------------------------------------------------------------------------------------------------
 
 ## Thanks
