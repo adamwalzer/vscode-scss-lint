@@ -69,13 +69,11 @@ class ErrorFinder {
                     let info = lines[i];
                     if(~info.indexOf('[E]')) {
                         errorCount++;
-                        info = info.substr(info.indexOf(':') + 1);
-                        const lineNum = parseInt(info.substr(0, info.indexOf(':')), 10) - 1;
-                        info = info.substr(info.indexOf(':') + 1);
-                        const startPos = parseInt(info.substr(0, info.indexOf(' ')), 10) - 1;
-                        info = info.substr(info.indexOf(' ') + 1);
-                        info = info.replace('[E] ', '');
-                        errors.push({ range: new Range(lineNum, startPos, lineNum + 1, 0), hoverMessage: info });
+                        info = info.match(/[^:]*:(\d+):(\d+) \[E\] (.*)$/);
+                        const lineNum = parseInt(info[1], 10) - 1;
+                        const startPos = parseInt(info[2], 10) - 1;
+                        const hoverMessage = info[3];
+                        errors.push({ range: new Range(lineNum, startPos, lineNum + 1, 0), hoverMessage });
                     }
                 }
                 activeEditor.setDecorations(errorDecorationType, errors);
