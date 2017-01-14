@@ -3,7 +3,7 @@
     "displayName": "scss-lint",
     "description": "a scss-lint extension for vscode",
     "version": "0.0.1",
-    "publisher": "thatawe",
+    "publisher": "adamwalzer",
     "engines": {
         "vscode": "^1.5.0"
     },
