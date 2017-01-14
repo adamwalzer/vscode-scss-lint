@@ -99,8 +99,8 @@ class ErrorFinderController {
     private _errorFinder: ErrorFinder;
     private _disposable: Disposable;
 
-    constructor(wordCounter: ErrorFinder) {
-        this._errorFinder = wordCounter;
+    constructor(errorFinder: ErrorFinder) {
+        this._errorFinder = errorFinder;
         this._errorFinder.finderErrors();
 
         // subscribe to selection change and editor activation events
