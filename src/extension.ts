@@ -63,7 +63,7 @@ class ErrorFinder {
             fileName = fileName.replace(dir, '');
             let cmd = `cd ${dir} && scss-lint --no-color ${fileName}`;
 
-            exec(cmd, function (err, stdout, stderr) {
+            exec(cmd, (err, stdout, stderr) => {
                 let lines = stdout.toString().split('\n');
                 for(let i = 0; i < lines.length; i++) {
                     let info = lines[i];
@@ -79,11 +79,11 @@ class ErrorFinder {
                     }
                 }
                 activeEditor.setDecorations(errorDecorationType, errors);
-            });
 
-            // Update the status bar
-            this._statusBarItem.text = errorCount !== 1 ? `$(telescope) ${errorCount} scss-lint errors` : '$(telescope) 1 scss-lint error';
-            this._statusBarItem.show();
+                // Update the status bar
+                this._statusBarItem.text = errorCount !== 1 ? `$(telescope) ${errorCount} scss-lint errors` : '$(telescope) 1 scss-lint error';
+                this._statusBarItem.show();
+            });
         } else {
             this._statusBarItem.hide();
         }
@@ -108,7 +108,7 @@ class ErrorFinderController {
         workspace.onDidSaveTextDocument(this._onEvent, this, subscriptions);
         window.onDidChangeActiveTextEditor(this._onEvent, this, subscriptions);
 
-        // update the counter for the current file
+        // update the error finder for the current file
         this._errorFinder.finderErrors();
 
         // create a combined disposable from both event subscriptions
