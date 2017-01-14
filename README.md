@@ -23,7 +23,11 @@ At this time there are no known issues with this extension as it has been tested
 
 ### 0.0.1
 
-This is the first and only release of this extension at this time.
+This is the initial release of this extension.
+
+### 0.0.2
+
+This release fixes an issue with a potential race condition while updating the status bar.
 
 -----------------------------------------------------------------------------------------------------------
 
