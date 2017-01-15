@@ -21,17 +21,21 @@ At this time there are no known issues with this extension as it has been tested
 
 ## Release Notes
 
-### 0.0.1
+### 0.0.4
 
-This is the initial release of this extension.
+Adding the icon and package.json update.
+
+### 0.0.3
+
+This release uses a regex to map the error message to the output.
 
 ### 0.0.2
 
 This release fixes an issue with a potential race condition while updating the status bar.
 
-### 0.0.3
+### 0.0.1
 
-This release uses a regex to map the error message to the output.
+This is the initial release of this extension.
 
 -----------------------------------------------------------------------------------------------------------
 

@@ -1,9 +1,17 @@
 {
     "name": "scss-lint",
     "displayName": "scss-lint",
-    "description": "a scss-lint extension for vscode",
     "version": "0.0.3",
+    "icon": "images/icon.png",
+    "description": "a scss-lint extension for vscode",
     "publisher": "adamwalzer",
+    "author": {
+        "name": "Adam Walzer"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/adamwalzer/vscode-scss-lint"
+    },
     "engines": {
         "vscode": "^1.5.0"
     },
@@ -13,6 +21,7 @@
     "activationEvents": [
         "onLanguage:scss"
     ],
+    "license": "MIT",
     "main": "./out/src/extension",
     "scripts": {
         "vscode:prepublish": "tsc -p ./",
