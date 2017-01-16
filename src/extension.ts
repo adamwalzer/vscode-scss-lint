@@ -58,9 +58,8 @@ class ErrorFinder {
             let activeEditor = window.activeTextEditor;
             let errors: DecorationOptions[] = [];
             let errorCount = 0;
-            let fileName = doc.fileName;
             let dir = (workspace.rootPath || '') + '/';
-            fileName = fileName.replace(dir, '');
+            let fileName = doc.fileName.replace(dir, '');
             let cmd = `cd ${dir} && scss-lint --no-color ${fileName}`;
 
             exec(cmd, (err, stdout, stderr) => {
