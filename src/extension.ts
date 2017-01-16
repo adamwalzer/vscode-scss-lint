@@ -15,9 +15,12 @@ import {
 } from 'vscode';
 
 let exec = require('child_process').exec;
+let backgroundColor = 'rgba(200, 0, 0, .8)';
 
 const errorDecorationType = window.createTextEditorDecorationType({
-    backgroundColor: 'rgba(200, 0, 0, .8)',
+    backgroundColor,
+    overviewRulerColor: backgroundColor,
+    overviewRulerLane: 2,
 });
 
 // This method is called when your extension is activated. Activation is
@@ -53,32 +56,29 @@ class ErrorFinder {
 
         let doc = editor.document;
 
-        // Only update status if an MarkDown file
+        // Only find errors if doc is an scss file
         if (doc.languageId === "scss") {
-            let activeEditor = window.activeTextEditor;
-            let errors: DecorationOptions[] = [];
-            let errorCount = 0;
-            let dir = (workspace.rootPath || '') + '/';
-            let fileName = doc.fileName.replace(dir, '');
-            let cmd = `cd ${dir} && scss-lint --no-color ${fileName}`;
+            const dir = (workspace.rootPath || '') + '/';
+            const fileName = doc.fileName.replace(dir, '');
+            const cmd = `cd ${dir} && scss-lint --no-color ${fileName}`;
 
-            exec(cmd, (err, stdout, stderr) => {
-                let lines = stdout.toString().split('\n');
-                for(let i = 0; i < lines.length; i++) {
-                    let info = lines[i];
-                    if(~info.indexOf('[E]')) {
-                        errorCount++;
-                        info = info.match(/[^:]*:(\d+):(\d+) \[E\] (.*)$/);
+            exec(cmd, (err, stdout) => {
+                const activeEditor = window.activeTextEditor;
+                const lines = stdout.toString().split('\n');
+                const errors: DecorationOptions[] = lines.map(line => {
+                    if(~line.indexOf('[E]')) {
+                        const info = line.match(/[^:]*:(\d+):(\d+) \[E\] (.*)$/);
                         const lineNum = parseInt(info[1], 10) - 1;
                         const startPos = parseInt(info[2], 10) - 1;
                         const hoverMessage = info[3];
-                        errors.push({ range: new Range(lineNum, startPos, lineNum + 1, 0), hoverMessage });
+                        return { range: new Range(lineNum, startPos, lineNum + 1, 0), hoverMessage };
                     }
-                }
+                }).filter(x => x);
+
                 activeEditor.setDecorations(errorDecorationType, errors);
 
                 // Update the status bar
-                this._statusBarItem.text = errorCount !== 1 ? `$(telescope) ${errorCount} scss-lint errors` : '$(telescope) 1 scss-lint error';
+                this._statusBarItem.text = `$(telescope) ${errors.length} scss-lint error${errors.length === 1 ? '' : 's'}`;
                 this._statusBarItem.show();
             });
         } else {

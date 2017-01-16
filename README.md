@@ -21,6 +21,10 @@ At this time there are no known issues with this extension as it has been tested
 
 ## Release Notes
 
+### 0.0.5
+
+Improving efficiency and adding overview ruler color.
+
 ### 0.0.4
 
 Adding the icon and package.json update.
