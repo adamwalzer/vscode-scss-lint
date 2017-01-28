@@ -23,7 +23,7 @@ At this time there are no known issues, but please feel free to report any you c
 
 ## Release Notes
 
-### See the CHANGELOG for notes on each release.
+### See the [CHANGELOG](CHANGELOG.md) for notes on each release.
 
 -----------------------------------------------------------------------------------------------------------
 
