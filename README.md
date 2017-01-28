@@ -15,11 +15,11 @@ This extention is dependant on the ruby gem scss-lint. It has only been tested w
 
 ## Extension Settings
 
-This extension does not currently take any settings. Simply install it, and it works.
+This extension itself does not currently take any settings, but it runs scss-lint which uses your .scss-lint.yml file. Simply install the extension, and it works.
 
 ## Known Issues
 
-At this time there are no known issues with this extension as it has been tested very limitedly.
+At this time there are no known issues, but please feel free to report any you come across.
 
 ## Release Notes
 
