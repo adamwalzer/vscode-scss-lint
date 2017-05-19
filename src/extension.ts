@@ -16,6 +16,7 @@ import {
 
 let exec = require('child_process').exec;
 let backgroundColor = 'rgba(200, 0, 0, .8)';
+let findParentDir = require('find-parent-dir');
 
 const errorDecorationType = window.createTextEditorDecorationType({
     backgroundColor,
@@ -60,7 +61,16 @@ class ErrorFinder {
         if (doc.languageId === "scss") {
             const dir = (workspace.rootPath || '') + '/';
             const fileName = doc.fileName.replace(dir, '');
-            const cmd = `cd ${dir} && scss-lint --no-color ${fileName}`;
+            let cmd = `cd ${dir} && scss-lint --config --no-color ${fileName}`;
+
+            // Find and set nearest config file
+            try {
+                const configDir =  doc.fileName.substring(0,  doc.fileName.lastIndexOf('/'));
+                const configFileDir = findParentDir.sync(configDir, '.scss-lint.yml');
+                cmd = `cd ${dir} && scss-lint -c ${configFileDir + '.scss-lint.yml'} --no-color ${fileName}`;
+            } catch(err) {
+                console.error('error', err); 
+            }
 
             exec(cmd, (err, stdout) => {
                 const activeEditor = window.activeTextEditor;
