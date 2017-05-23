@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to the "scss-lint" extension will be documented in this file.
 
+### [0.0.7]
+
+[@youdame](https://github.com/yoodame)'s PR makes this extension work even when the .scss-lint.yml isn't in the root directory of the project.
+
 ### [0.0.6]
 
 Adding the demo gif and improving README.

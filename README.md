@@ -19,7 +19,7 @@ This extension itself does not currently take any settings, but it runs scss-lin
 
 ## Known Issues
 
-At this time there are no known issues, but please feel free to report any you come across.
+Known issues are tracked on github. Feel free to post them there or resolve some of the issues you see.
 
 ## Release Notes
 
@@ -30,5 +30,7 @@ At this time there are no known issues, but please feel free to report any you c
 ## Thanks
 
 We must thank [sass](http://sass-lang.com), [scss-lint](https://github.com/brigade/scss-lint), and [vscode-wordcount](https://github.com/Microsoft/vscode-wordcount) for the help they provided in making this extension.
+
+Also, thank you to [@youdame](https://github.com/yoodame) for his PR making this extension work even when the .scss-lint.yml isn't in the root directory of the project.
 
 **Enjoy!**
