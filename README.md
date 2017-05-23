@@ -20,6 +20,31 @@ scssLint.errorBackgroundColor sets the error background color and defaults to "r
 scssLint.warningBackgroundColor sets the warning background color and defaults to "rgba(200, 120, 0, .8)".
 scssLint.languages sets the languages this extension works with. The only options are css and scss. It defaults to ["scss"]. It can be ["css"] or ["scss", "css"] as well.
 
+Default settings
+
+///settings.json
+{
+    "scssLint.errorBackgroundColor": "rgba(200, 0, 0, .8)",
+    "scssLint.warningBackgroundColor": "rgba(200, 120, 0, .8)",
+    "scssLint.languages": [
+        "scss"
+    ]
+}
+///
+
+To add css support change to this:
+
+///settings.json
+{
+    "scssLint.errorBackgroundColor": "rgba(200, 0, 0, .8)",
+    "scssLint.warningBackgroundColor": "rgba(200, 120, 0, .8)",
+    "scssLint.languages": [
+        "css",
+        "scss"
+    ]
+}
+///
+
 ## Known Issues
 
 Known issues are tracked on github. Feel free to post them there or resolve some of the issues you see.
