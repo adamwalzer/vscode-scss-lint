@@ -1,7 +1,7 @@
 {
     "name": "scss-lint",
     "displayName": "scss-lint",
-    "version": "0.0.11",
+    "version": "0.0.12",
     "icon": "images/icon.png",
     "description": "a scss-lint extension for vscode",
     "publisher": "adamwalzer",
@@ -19,6 +19,7 @@
         "Linters"
     ],
     "activationEvents": [
+        "onLanguage:css",
         "onLanguage:scss"
     ],
     "license": "MIT",
@@ -43,6 +44,13 @@
                     "type": "string",
                     "default": "rgba(200, 120, 0, .8)",
                     "description": "The color that will highlight warnings"
+                },
+                "scssLint.languages": {
+                    "type": "array",
+                    "default": [
+                        "scss"
+                    ],
+                    "description": "The languages this app will work for"
                 }
             }
         }

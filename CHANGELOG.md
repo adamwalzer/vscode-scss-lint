@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to the "scss-lint" extension will be documented in this file.
 
+### [0.0.12]
+
+Added language support for css. scssLint.languages is an array that controls what languages this extension works with.
+
 ### [0.0.11]
 
 Adding in warnings as well as scssLint.errorBackgroundColor and scssLint.warningBackgroundColor configurations.

@@ -20,6 +20,7 @@ const findParentDir = require('find-parent-dir');
 const {
     errorBackgroundColor,
     warningBackgroundColor,
+    languages,
 } = workspace.getConfiguration('scssLint');
 
 const errorDecorationType = window.createTextEditorDecorationType({
@@ -67,7 +68,7 @@ class ErrorFinder {
         let doc = editor.document;
 
         // Only find errors if doc is an scss file
-        if (doc.languageId === "scss") {
+        if (~languages.indexOf(doc.languageId)) {
             const dir = (workspace.rootPath || '') + '/';
             const fileName = doc.fileName.replace(dir, '');
             let cmd = `cd ${dir} && scss-lint --config --no-color ${fileName}`;
