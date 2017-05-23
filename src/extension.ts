@@ -72,13 +72,10 @@ class ErrorFinder {
                 console.error('error', err);
             }
 
-            console.log(cmd);
-
             exec(cmd, (err, stdout) => {
                 const activeEditor = window.activeTextEditor;
                 const lines = stdout.toString().split('\n');
                 const errors: DecorationOptions[] = lines.map(line => {
-                    console.log(line);
                     if(~line.indexOf('[E]')) {
                         const info = line.match(/[^:]*:(\d+):(\d+) \[E\] (.*)$/);
                         const lineNum = parseInt(info[1], 10) - 1;
