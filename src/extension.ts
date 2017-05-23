@@ -65,17 +65,20 @@ class ErrorFinder {
 
             // Find and set nearest config file
             try {
-                const configDir =  doc.fileName.substring(0,  doc.fileName.lastIndexOf('/'));
+                const configDir =  doc.fileName.substring(0, doc.fileName.lastIndexOf('/'));
                 const configFileDir = findParentDir.sync(configDir, '.scss-lint.yml');
                 cmd = `cd ${dir} && scss-lint -c ${configFileDir + '.scss-lint.yml'} --no-color ${fileName}`;
             } catch(err) {
-                console.error('error', err); 
+                console.error('error', err);
             }
+
+            console.log(cmd);
 
             exec(cmd, (err, stdout) => {
                 const activeEditor = window.activeTextEditor;
                 const lines = stdout.toString().split('\n');
                 const errors: DecorationOptions[] = lines.map(line => {
+                    console.log(line);
                     if(~line.indexOf('[E]')) {
                         const info = line.match(/[^:]*:(\d+):(\d+) \[E\] (.*)$/);
                         const lineNum = parseInt(info[1], 10) - 1;
