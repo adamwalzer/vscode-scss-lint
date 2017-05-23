@@ -14,20 +14,29 @@ import {
     OverviewRulerLane,
 } from 'vscode';
 
-let exec = require('child_process').exec;
-let backgroundColor = 'rgba(200, 0, 0, .8)';
-let findParentDir = require('find-parent-dir');
+const exec = require('child_process').exec;
+const findParentDir = require('find-parent-dir');
+
+const {
+    errorBackgroundColor,
+    warningBackgroundColor,
+} = workspace.getConfiguration('scssLint');
 
 const errorDecorationType = window.createTextEditorDecorationType({
-    backgroundColor,
-    overviewRulerColor: backgroundColor,
+    backgroundColor: errorBackgroundColor,
+    overviewRulerColor: errorBackgroundColor,
+    overviewRulerLane: 2,
+});
+
+const warningDecorationType = window.createTextEditorDecorationType({
+    backgroundColor: warningBackgroundColor,
+    overviewRulerColor: warningBackgroundColor,
     overviewRulerLane: 2,
 });
 
 // This method is called when your extension is activated. Activation is
 // controlled by the activation events defined in package.json.
 export function activate(context: ExtensionContext) {
-
     // create a new error finder
     let errorFinder = new ErrorFinder();
     let controller = new ErrorFinderController(errorFinder);
@@ -75,6 +84,7 @@ class ErrorFinder {
             exec(cmd, (err, stdout) => {
                 const activeEditor = window.activeTextEditor;
                 const lines = stdout.toString().split('\n');
+
                 const errors: DecorationOptions[] = lines.map(line => {
                     if(~line.indexOf('[E]')) {
                         const info = line.match(/[^:]*:(\d+):(\d+) \[E\] (.*)$/);
@@ -85,7 +95,18 @@ class ErrorFinder {
                     }
                 }).filter(x => x);
 
+                const warnings: DecorationOptions[] = lines.map(line => {
+                    if(~line.indexOf('[W]')) {
+                        const info = line.match(/[^:]*:(\d+):(\d+) \[W\] (.*)$/);
+                        const lineNum = parseInt(info[1], 10) - 1;
+                        const startPos = parseInt(info[2], 10) - 1;
+                        const hoverMessage = info[3];
+                        return { range: new Range(lineNum, startPos, lineNum + 1, 0), hoverMessage };
+                    }
+                }).filter(x => x);
+
                 activeEditor.setDecorations(errorDecorationType, errors);
+                activeEditor.setDecorations(warningDecorationType, warnings);
 
                 // Update the status bar
                 this._statusBarItem.text = `$(telescope) ${errors.length} scss-lint error${errors.length === 1 ? '' : 's'}`;

@@ -15,7 +15,9 @@ This extention is dependant on the ruby gem scss-lint. It has only been tested w
 
 ## Extension Settings
 
-This extension itself does not currently take any settings, but it runs scss-lint which uses your .scss-lint.yml file. Simply install the extension, and it works.
+This extension runs scss-lint which uses your .scss-lint.yml file. Simply install the extension, and it works.
+scssLint.errorBackgroundColor set the error background color and defaults to "rgba(200, 0, 0, .8)".
+scssLint.warningBackgroundColor set the warning background color and defaults to "rgba(200, 120, 0, .8)".
 
 ## Known Issues
 

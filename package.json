@@ -1,7 +1,7 @@
 {
     "name": "scss-lint",
     "displayName": "scss-lint",
-    "version": "0.0.10",
+    "version": "0.0.11",
     "icon": "images/icon.png",
     "description": "a scss-lint extension for vscode",
     "publisher": "adamwalzer",
@@ -28,6 +28,24 @@
         "compile": "tsc -watch -p ./",
         "postinstall": "node ./node_modules/vscode/bin/install",
         "test": "node ./node_modules/vscode/bin/test"
+    },
+    "contributes": {
+        "configuration": {
+            "type": "object",
+            "title": "scss-lint configuration",
+            "properties": {
+                "scssLint.errorBackgroundColor": {
+                    "type": "string",
+                    "default": "rgba(200, 0, 0, .8)",
+                    "description": "The color that will highlight errors"
+                },
+                "scssLint.warningBackgroundColor": {
+                    "type": "string",
+                    "default": "rgba(200, 120, 0, .8)",
+                    "description": "The color that will highlight warnings"
+                }
+            }
+        }
     },
     "dependencies": {
         "find-parent-dir": "^0.3.0"

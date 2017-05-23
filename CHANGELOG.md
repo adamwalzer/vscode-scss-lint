@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to the "scss-lint" extension will be documented in this file.
 
+### [0.0.11]
+
+Adding in warnings as well as scssLint.errorBackgroundColor and scssLint.warningBackgroundColor configurations.
+
 ### [0.0.10]
 
 CHANGELOG updates forgotten in last update.
