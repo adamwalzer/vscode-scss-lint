@@ -22,7 +22,7 @@ scssLint.languages sets the languages this extension works with. The only option
 
 Default settings
 
-///settings.json
+```settings.json
 {
     "scssLint.errorBackgroundColor": "rgba(200, 0, 0, .8)",
     "scssLint.warningBackgroundColor": "rgba(200, 120, 0, .8)",
@@ -30,11 +30,11 @@ Default settings
         "scss"
     ]
 }
-///
+```
 
 To add css support change to this:
 
-///settings.json
+```settings.json
 {
     "scssLint.errorBackgroundColor": "rgba(200, 0, 0, .8)",
     "scssLint.warningBackgroundColor": "rgba(200, 120, 0, .8)",
@@ -43,7 +43,7 @@ To add css support change to this:
         "scss"
     ]
 }
-///
+```
 
 ## Known Issues
 
