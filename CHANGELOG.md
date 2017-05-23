@@ -1,6 +1,18 @@
 # Change Log
 All notable changes to the "scss-lint" extension will be documented in this file.
 
+### [0.0.10]
+
+CHANGELOG updates forgotten in last update.
+
+### [0.0.9]
+
+Resolves issue with dependencies.
+
+### [0.0.8]
+
+An unsuccessful debug attempt.
+
 ### [0.0.7]
 
 [@youdame](https://github.com/yoodame)'s PR makes this extension work even when the .scss-lint.yml isn't in the root directory of the project.
