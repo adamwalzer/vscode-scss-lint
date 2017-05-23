@@ -67,7 +67,7 @@ class ErrorFinder {
             try {
                 const configDir =  doc.fileName.substring(0, doc.fileName.lastIndexOf('/'));
                 const configFileDir = findParentDir.sync(configDir, '.scss-lint.yml');
-                cmd = `cd ${dir} && scss-lint -c ${configFileDir + '.scss-lint.yml'} --no-color ${fileName}`;
+                cmd = `scss-lint -c ${configFileDir + '.scss-lint.yml'} --no-color ${doc.fileName}`;
             } catch(err) {
                 console.error('error', err);
             }
