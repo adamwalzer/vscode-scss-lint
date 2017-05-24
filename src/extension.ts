@@ -110,7 +110,7 @@ class ErrorFinder {
                 activeEditor.setDecorations(warningDecorationType, warnings);
 
                 // Update the status bar
-                this._statusBarItem.text = `$(telescope) ${errors.length} scss-lint error${errors.length === 1 ? '' : 's'}`;
+                this._statusBarItem.text = `$(telescope) scss-lint  ${errors.length} $(circle-slash)  ${warnings.length} $(alert)`;
                 this._statusBarItem.show();
             });
         } else {

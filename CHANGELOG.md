@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to the "scss-lint" extension will be documented in this file.
 
+### [0.0.14]
+
+Adding warning count to the status bar.
+
 ### [0.0.13]
 
 Improved README.
