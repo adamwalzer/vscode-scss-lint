@@ -51,6 +51,11 @@
                         "scss"
                     ],
                     "description": "The languages this app will work for"
+                },
+                "scssLint.statusBarText": {
+                    "type": "function",
+                    "default": "`$(telescope) scss-lint  ${errors.length} $(x)  ${warnings.length} $(alert)`",
+                    "description": "The display text in the status bar"
                 }
             }
         }

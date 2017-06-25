@@ -21,6 +21,7 @@ const {
     errorBackgroundColor,
     warningBackgroundColor,
     languages,
+    statusBarText,
 } = workspace.getConfiguration('scssLint');
 
 const errorDecorationType = window.createTextEditorDecorationType({
@@ -110,7 +111,7 @@ class ErrorFinder {
                 activeEditor.setDecorations(warningDecorationType, warnings);
 
                 // Update the status bar
-                this._statusBarItem.text = `$(telescope) scss-lint  ${errors.length} $(circle-slash)  ${warnings.length} $(alert)`;
+                this._statusBarItem.text = eval(statusBarText);
                 this._statusBarItem.show();
             });
         } else {

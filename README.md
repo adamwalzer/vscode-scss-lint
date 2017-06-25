@@ -28,7 +28,8 @@ Default settings
     "scssLint.warningBackgroundColor": "rgba(200, 120, 0, .8)",
     "scssLint.languages": [
         "scss"
-    ]
+    ],
+    "scssLint.statusBarText": "`$(telescope) scss-lint  ${errors.length} $(x)  ${warnings.length} $(alert)`"
 }
 ```
 
@@ -41,7 +42,8 @@ To add css support change to this:
     "scssLint.languages": [
         "css",
         "scss"
-    ]
+    ],
+    "scssLint.statusBarText": "`$(telescope) scss-lint  ${errors.length} $(x)  ${warnings.length} $(alert)`"
 }
 ```
 
