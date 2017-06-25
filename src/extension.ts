@@ -107,12 +107,14 @@ class ErrorFinder {
                     }
                 }).filter(x => x);
 
-                activeEditor.setDecorations(errorDecorationType, errors);
-                activeEditor.setDecorations(warningDecorationType, warnings);
+                if (editor === window.activeTextEditor) {
+                    activeEditor.setDecorations(errorDecorationType, errors);
+                    activeEditor.setDecorations(warningDecorationType, warnings);
 
-                // Update the status bar
-                this._statusBarItem.text = eval(statusBarText);
-                this._statusBarItem.show();
+                    // Update the status bar
+                    this._statusBarItem.text = eval(statusBarText);
+                    this._statusBarItem.show();
+                }
             });
         } else {
             this._statusBarItem.hide();

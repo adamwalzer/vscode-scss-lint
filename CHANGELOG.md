@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to the "scss-lint" extension will be documented in this file.
 
+### [0.0.15]
+
+Make statusBarText an option. Prevent logging on the wrong files.
+
 ### [0.0.14]
 
 Adding warning count to the status bar.
