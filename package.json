@@ -1,7 +1,7 @@
 {
     "name": "scss-lint",
     "displayName": "scss-lint",
-    "version": "0.0.15",
+    "version": "0.0.16",
     "icon": "images/icon.png",
     "description": "a scss-lint extension for vscode",
     "publisher": "adamwalzer",
@@ -35,6 +35,11 @@
             "type": "object",
             "title": "scss-lint configuration",
             "properties": {
+                "scssLint.showHighlights": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Set to true to highlight the errors and warnings"
+                },
                 "scssLint.errorBackgroundColor": {
                     "type": "string",
                     "default": "rgba(200, 0, 0, .8)",
@@ -53,7 +58,7 @@
                     "description": "The languages this app will work for"
                 },
                 "scssLint.statusBarText": {
-                    "type": "function",
+                    "type": "string",
                     "default": "`$(telescope) scss-lint  ${errors.length} $(x)  ${warnings.length} $(alert)`",
                     "description": "The display text in the status bar"
                 }

@@ -16,14 +16,17 @@ This extention is dependant on the ruby gem scss-lint. It has only been tested w
 ## Extension Settings
 
 This extension runs scss-lint which uses your .scss-lint.yml file. Simply install the extension, and it works.
+scssLint.showHighlights sets whether or not to show highlights in addition to underlines.
 scssLint.errorBackgroundColor sets the error background color and defaults to "rgba(200, 0, 0, .8)".
 scssLint.warningBackgroundColor sets the warning background color and defaults to "rgba(200, 120, 0, .8)".
-scssLint.languages sets the languages this extension works with. The only options are css and scss. It defaults to ["scss"]. It can be ["css"] or ["scss", "css"] as well.
+scssLint.languages sets the languages this extension works with. It defaults to ["scss"]. To add css make it ["scss", "css"].
+scssLint.statusBarText sets what the status bar text should read.
 
 Default settings
 
 ```settings.json
 {
+    "scssLint.showHighlights": false,
     "scssLint.errorBackgroundColor": "rgba(200, 0, 0, .8)",
     "scssLint.warningBackgroundColor": "rgba(200, 120, 0, .8)",
     "scssLint.languages": [
@@ -37,6 +40,7 @@ To add css support change to this:
 
 ```settings.json
 {
+    "scssLint.showHighlights": false,
     "scssLint.errorBackgroundColor": "rgba(200, 0, 0, .8)",
     "scssLint.warningBackgroundColor": "rgba(200, 120, 0, .8)",
     "scssLint.languages": [
@@ -61,6 +65,6 @@ Known issues are tracked on github. Feel free to post them there or resolve some
 
 We must thank [sass](http://sass-lang.com), [scss-lint](https://github.com/brigade/scss-lint), and [vscode-wordcount](https://github.com/Microsoft/vscode-wordcount) for the help they provided in making this extension.
 
-Also, thank you to [@youdame](https://github.com/yoodame) for his PR making this extension work even when the .scss-lint.yml isn't in the root directory of the project.
+Also, thank you to [@youdame](https://github.com/yoodame) for his PR making this extension work even when the .scss-lint.yml isn't in the root directory of the project and to [@donni106](https://github.com/donni106) for his help identifying and finding solutions to issues with the extension.
 
 **Enjoy!**
