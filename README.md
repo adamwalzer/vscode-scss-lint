@@ -65,6 +65,6 @@ Known issues are tracked on github. Feel free to post them there or resolve some
 
 We must thank [sass](http://sass-lang.com), [scss-lint](https://github.com/brigade/scss-lint), and [vscode-wordcount](https://github.com/Microsoft/vscode-wordcount) for the help they provided in making this extension.
 
-Also, thank you to [@youdame](https://github.com/yoodame) for his PR making this extension work even when the .scss-lint.yml isn't in the root directory of the project.
+Also, thank you to [@youdame](https://github.com/yoodame) for his PR making this extension work even when the .scss-lint.yml isn't in the root directory of the project and to [@donni106](https://github.com/donni106) for his help identifying and finding solutions to issues with the extension.
 
 **Enjoy!**
