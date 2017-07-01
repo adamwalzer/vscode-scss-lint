@@ -10,8 +10,12 @@ import {
     StatusBarItem,
     TextDocument,
     Range,
+    languages as langs,
     DecorationOptions,
     OverviewRulerLane,
+    DiagnosticCollection,
+    DiagnosticSeverity,
+    Diagnostic,
 } from 'vscode';
 
 const exec = require('child_process').exec;
@@ -22,6 +26,7 @@ const {
     warningBackgroundColor,
     languages,
     statusBarText,
+    showHighlights,
 } = workspace.getConfiguration('scssLint');
 
 const errorDecorationType = window.createTextEditorDecorationType({
@@ -52,15 +57,20 @@ class ErrorFinder {
 
     private _statusBarItem: StatusBarItem;
 
+    private _diagnosticCollection: DiagnosticCollection;
+
+    constructor() {
+        this._diagnosticCollection = langs.createDiagnosticCollection();
+        this._statusBarItem = window.createStatusBarItem(StatusBarAlignment.Left);
+    }
+
     public finderErrors() {
 
         // Create as needed
-        if (!this._statusBarItem) {
-            this._statusBarItem = window.createStatusBarItem(StatusBarAlignment.Left);
-        }
+        if (!this._statusBarItem) return;
 
         // Get the current text editor
-        let editor = window.activeTextEditor;
+        const editor = window.activeTextEditor;
         if (!editor) {
             this._statusBarItem.hide();
             return;
@@ -68,7 +78,7 @@ class ErrorFinder {
 
         let doc = editor.document;
 
-        // Only find errors if doc is an scss file
+        // Only find errors if doc languageId is in languages array
         if (~languages.indexOf(doc.languageId)) {
             const dir = (workspace.rootPath || '') + '/';
             const fileName = doc.fileName.replace(dir, '');
@@ -84,32 +94,53 @@ class ErrorFinder {
             }
 
             exec(cmd, (err, stdout) => {
-                const activeEditor = window.activeTextEditor;
                 const lines = stdout.toString().split('\n');
 
-                const errors: DecorationOptions[] = lines.map(line => {
-                    if(~line.indexOf('[E]')) {
-                        const info = line.match(/[^:]*:(\d+):(\d+) \[E\] (.*)$/);
-                        const lineNum = parseInt(info[1], 10) - 1;
-                        const startPos = parseInt(info[2], 10) - 1;
-                        const hoverMessage = info[3];
-                        return { range: new Range(lineNum, startPos, lineNum + 1, 0), hoverMessage };
-                    }
-                }).filter(x => x);
+                const {
+                    errors,
+                    warnings,
+                    diagnostics,
+                } = lines.reduce((a, line) => {
+                    let info,
+                        severity;
 
-                const warnings: DecorationOptions[] = lines.map(line => {
-                    if(~line.indexOf('[W]')) {
-                        const info = line.match(/[^:]*:(\d+):(\d+) \[W\] (.*)$/);
-                        const lineNum = parseInt(info[1], 10) - 1;
-                        const startPos = parseInt(info[2], 10) - 1;
-                        const hoverMessage = info[3];
-                        return { range: new Range(lineNum, startPos, lineNum + 1, 0), hoverMessage };
+                    if(~line.indexOf('[E]')) {
+                        info = line.match(/[^:]*:(\d+):(\d+) \[E\] (.*)$/);
+                        severity = DiagnosticSeverity.Error;
+                    } else if(~line.indexOf('[W]')) {
+                        info = line.match(/[^:]*:(\d+):(\d+) \[W\] (.*)$/);
+                        severity = DiagnosticSeverity.Warning;
+                    } else {
+                        return a;
                     }
-                }).filter(x => x);
+
+                    const lineNum = parseInt(info[1], 10) - 1;
+                    const startPos = parseInt(info[2], 10) - 1;
+                    const message = info[3];
+                    const range = new Range(lineNum, startPos, lineNum + 1, 0);
+
+                    if(severity === DiagnosticSeverity.Error) {
+                        a.errors.push({ range, message });
+                    } else if(severity === DiagnosticSeverity.Warning) {
+                        a.warnings.push({ range, message });
+                    }
+
+                    a.diagnostics.push(new Diagnostic(range, message, severity));
+
+                    return a;
+                }, {
+                    errors: [],
+                    warnings: [],
+                    diagnostics: [],
+                });
 
                 if (editor === window.activeTextEditor) {
-                    activeEditor.setDecorations(errorDecorationType, errors);
-                    activeEditor.setDecorations(warningDecorationType, warnings);
+                    if (showHighlights) {
+                        editor.setDecorations(errorDecorationType, errors);
+                        editor.setDecorations(warningDecorationType, warnings);
+                    }
+
+                    this._diagnosticCollection.set(doc.uri, diagnostics);
 
                     // Update the status bar
                     this._statusBarItem.text = eval(statusBarText);
@@ -133,7 +164,6 @@ class ErrorFinderController {
 
     constructor(errorFinder: ErrorFinder) {
         this._errorFinder = errorFinder;
-        this._errorFinder.finderErrors();
 
         // subscribe to selection change and editor activation events
         let subscriptions: Disposable[] = [];
