@@ -32,7 +32,8 @@ Default settings
     "scssLint.languages": [
         "scss"
     ],
-    "scssLint.statusBarText": "`$(telescope) scss-lint  ${errors.length} $(x)  ${warnings.length} $(alert)`"
+    "scssLint.statusBarText": "`$(telescope) scss-lint  ${errors.length} $(x)  ${warnings.length} $(alert)`",
+    "scssLint.configDir": ""
 }
 ```
 
@@ -47,7 +48,8 @@ To add css support change to this:
         "css",
         "scss"
     ],
-    "scssLint.statusBarText": "`$(telescope) scss-lint  ${errors.length} $(x)  ${warnings.length} $(alert)`"
+    "scssLint.statusBarText": "`$(telescope) scss-lint  ${errors.length} $(x)  ${warnings.length} $(alert)`",
+    "scssLint.configDir": ""
 }
 ```
 

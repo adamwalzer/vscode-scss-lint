@@ -27,6 +27,7 @@ const {
     languages,
     statusBarText,
     showHighlights,
+    configDir,
 } = workspace.getConfiguration('scssLint');
 
 const errorDecorationType = window.createTextEditorDecorationType({
@@ -82,15 +83,17 @@ class ErrorFinder {
         if (~languages.indexOf(doc.languageId)) {
             const dir = (workspace.rootPath || '') + '/';
             const fileName = doc.fileName.replace(dir, '');
-            let cmd = `cd ${dir} && scss-lint --config --no-color ${fileName}`;
+            let cmd = `cd ${dir} && scss-lint -c ${configDir + '.scss-lint.yml'} --no-color ${fileName}`;
 
-            // Find and set nearest config file
-            try {
-                const configDir =  doc.fileName.substring(0, doc.fileName.lastIndexOf('/'));
-                const configFileDir = findParentDir.sync(configDir, '.scss-lint.yml');
-                cmd = `scss-lint -c ${configFileDir + '.scss-lint.yml'} --no-color ${doc.fileName}`;
-            } catch(err) {
-                console.error('error', err);
+            if (!configDir) {
+                // Find and set nearest config file
+                try {
+                    const startingDir =  doc.fileName.substring(0, doc.fileName.lastIndexOf('/'));
+                    const configFileDir = findParentDir.sync(startingDir, '.scss-lint.yml');
+                    cmd = `scss-lint -c ${configFileDir + '.scss-lint.yml'} --no-color ${doc.fileName}`;
+                } catch(err) {
+                    console.error('error', err);
+                }
             }
 
             exec(cmd, (err, stdout) => {
