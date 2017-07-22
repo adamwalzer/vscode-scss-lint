@@ -1,7 +1,7 @@
 {
     "name": "scss-lint",
     "displayName": "scss-lint",
-    "version": "0.0.16",
+    "version": "0.0.17",
     "icon": "images/icon.png",
     "description": "a scss-lint extension for vscode",
     "publisher": "adamwalzer",
@@ -61,6 +61,11 @@
                     "type": "string",
                     "default": "`$(telescope) scss-lint  ${errors.length} $(x)  ${warnings.length} $(alert)`",
                     "description": "The display text in the status bar"
+                },
+                "scssLint.configDir": {
+                    "type": "string",
+                    "default": "",
+                    "description": "The directory where to find the .scss-lint.yml file"
                 }
             }
         }
