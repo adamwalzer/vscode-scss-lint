@@ -81,16 +81,16 @@ class ErrorFinder {
 
         // Only find errors if doc languageId is in languages array
         if (~languages.indexOf(doc.languageId)) {
-            const dir = (workspace.rootPath || '') + '/';
+            const dir = (workspace.rootPath || '') + '/'; // workspace.rootPath is null
             const fileName = doc.fileName.replace(dir, '');
             let cmd = `cd ${dir} && scss-lint -c ${configDir + '.scss-lint.yml'} --no-color ${fileName}`;
 
             if (!configDir) {
                 // Find and set nearest config file
                 try {
-                    const startingDir =  doc.fileName.substring(0, doc.fileName.lastIndexOf('/'));
+                    const startingDir = doc.fileName.substring(0, doc.fileName.lastIndexOf('\\')); // opposite slash on windows
                     const configFileDir = findParentDir.sync(startingDir, '.scss-lint.yml');
-                    cmd = `scss-lint -c ${configFileDir + '.scss-lint.yml'} --no-color ${doc.fileName}`;
+                    cmd = `scss-lint -c ${configFileDir + '\\.scss-lint.yml'}} --no-color ${doc.fileName}`; // slash missing on widows
                 } catch(err) {
                     console.error('error', err);
                 }
@@ -106,6 +106,8 @@ class ErrorFinder {
                 } = lines.reduce((a, line) => {
                     let info,
                         severity;
+                    
+                    line = line.replace(/^\s\s*/, '').replace(/\s\s*$/, ''); // trim whitespace string 
 
                     if(~line.indexOf('[E]')) {
                         info = line.match(/[^:]*:(\d+):(\d+) \[E\] (.*)$/);
