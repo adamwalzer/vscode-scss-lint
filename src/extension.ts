@@ -42,6 +42,9 @@ const warningDecorationType = window.createTextEditorDecorationType({
     overviewRulerLane: 2,
 });
 
+const isWindows = /^win/.test(process.platform);
+const SEPARATOR = isWindows ? '\\' : '/';
+
 // This method is called when your extension is activated. Activation is
 // controlled by the activation events defined in package.json.
 export function activate(context: ExtensionContext) {
@@ -81,16 +84,16 @@ class ErrorFinder {
 
         // Only find errors if doc languageId is in languages array
         if (~languages.indexOf(doc.languageId)) {
-            const dir = (workspace.rootPath || '') + '/'; // workspace.rootPath is null
+            const dir = (workspace.rootPath || '') + SEPARATOR; // workspace.rootPath may be null on windows
             const fileName = doc.fileName.replace(dir, '');
             let cmd = `cd ${dir} && scss-lint -c ${configDir + '.scss-lint.yml'} --no-color ${fileName}`;
 
             if (!configDir) {
                 // Find and set nearest config file
                 try {
-                    const startingDir = doc.fileName.substring(0, doc.fileName.lastIndexOf('\\')); // opposite slash on windows
-                    const configFileDir = findParentDir.sync(startingDir, '.scss-lint.yml');
-                    cmd = `scss-lint -c ${configFileDir + '\\.scss-lint.yml'}} --no-color ${doc.fileName}`; // slash missing on widows
+                    const startingDir = doc.fileName.substring(0, doc.fileName.lastIndexOf(SEPARATOR));
+                    const configFileDir = findParentDir.sync(startingDir, '.scss-lint.yml') + (isWindows ? SEPARATOR : ''); // need \\ for windows
+                    cmd = `scss-lint -c ${configFileDir + '.scss-lint.yml'} --no-color ${doc.fileName}`;
                 } catch(err) {
                     console.error('error', err);
                 }
@@ -106,8 +109,8 @@ class ErrorFinder {
                 } = lines.reduce((a, line) => {
                     let info,
                         severity;
-                    
-                    line = line.replace(/^\s\s*/, '').replace(/\s\s*$/, ''); // trim whitespace string 
+
+                    line = line.trim();
 
                     if(~line.indexOf('[E]')) {
                         info = line.match(/[^:]*:(\d+):(\d+) \[E\] (.*)$/);
