@@ -1,13 +1,17 @@
 # Change Log
 All notable changes to the "scss-lint" extension will be documented in this file.
 
+### [0.0.18]
+
+Add Windows compatability. [@DrChills](https://github.com/DrChills)
+
 ### [0.0.17]
 
 Add the ability to change the config directory.
 
 ### [0.0.16]
 
-Make this extension underline instead of highlight but create a config to highlight if desired. Report errors and warnings in the Problems Panel.
+Make this extension underline instead of highlight but create a config to highlight if desired. Report errors and warnings in the Problems Panel. [@donni106](https://github.com/donni106)
 
 ### [0.0.15]
 
