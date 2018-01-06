@@ -16,6 +16,7 @@ import {
     DiagnosticCollection,
     DiagnosticSeverity,
     Diagnostic,
+    Uri,
 } from 'vscode';
 
 const exec = require('child_process').exec;
@@ -87,12 +88,13 @@ class ErrorFinder {
             const dir = (workspace.rootPath || '') + SEPARATOR; // workspace.rootPath may be null on windows
             const fileName = doc.fileName.replace(dir, '');
             let cmd = `cd ${dir} && scss-lint -c ${configDir + '.scss-lint.yml'} --no-color ${fileName}`;
+            let configFileDir = configDir;
 
             if (!configDir) {
                 // Find and set nearest config file
                 try {
                     const startingDir = doc.fileName.substring(0, doc.fileName.lastIndexOf(SEPARATOR));
-                    const configFileDir = findParentDir.sync(startingDir, '.scss-lint.yml') + (isWindows ? SEPARATOR : ''); // need \\ for windows
+                    configFileDir = findParentDir.sync(startingDir, '.scss-lint.yml') + (isWindows ? SEPARATOR : ''); // need \\ for windows
                     cmd = `scss-lint -c ${configFileDir + '.scss-lint.yml'} --no-color ${doc.fileName}`;
                 } catch(err) {
                     console.error('error', err);
@@ -103,6 +105,7 @@ class ErrorFinder {
                 const lines = stdout.toString().split('\n');
 
                 const {
+                    exits,
                     errors,
                     warnings,
                     diagnostics,
@@ -118,6 +121,8 @@ class ErrorFinder {
                     } else if(~line.indexOf('[W]')) {
                         info = line.match(/[^:]*:(\d+):(\d+) \[W\] (.*)$/);
                         severity = DiagnosticSeverity.Warning;
+                    } else if (line) {
+                        info = [1, 1, 1, 'Error running scss-lint: ' + line];
                     } else {
                         return a;
                     }
@@ -129,14 +134,18 @@ class ErrorFinder {
 
                     if(severity === DiagnosticSeverity.Error) {
                         a.errors.push({ range, message });
+                        a.diagnostics.push(new Diagnostic(range, message, severity));
                     } else if(severity === DiagnosticSeverity.Warning) {
                         a.warnings.push({ range, message });
+                        a.diagnostics.push(new Diagnostic(range, message, severity));
+                    } else {
+                        severity === DiagnosticSeverity.Error;
+                        a.exits.push(new Diagnostic(range, message, severity));
                     }
-
-                    a.diagnostics.push(new Diagnostic(range, message, severity));
 
                     return a;
                 }, {
+                    exits: [],
                     errors: [],
                     warnings: [],
                     diagnostics: [],
@@ -148,6 +157,9 @@ class ErrorFinder {
                         editor.setDecorations(warningDecorationType, warnings);
                     }
 
+                    let configUri = Uri.parse(configFileDir + '.scss-lint.yml');
+                    configUri = configUri.with({scheme: 'file'});
+                    this._diagnosticCollection.set(configUri, exits);
                     this._diagnosticCollection.set(doc.uri, diagnostics);
 
                     // Update the status bar

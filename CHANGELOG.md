@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to the "scss-lint" extension will be documented in this file.
 
+### [0.0.19]
+
+Report scss-lint exit codes as errors in config file.
+
 ### [0.0.18]
 
 Add Windows compatability. [@DrChills](https://github.com/DrChills)
