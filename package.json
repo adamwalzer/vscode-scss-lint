@@ -1,7 +1,7 @@
 {
     "name": "scss-lint",
     "displayName": "scss-lint",
-    "version": "0.0.19",
+    "version": "0.0.20",
     "icon": "images/icon.png",
     "description": "a scss-lint extension for vscode",
     "publisher": "adamwalzer",
@@ -39,6 +39,11 @@
                     "type": "boolean",
                     "default": false,
                     "description": "Set to true to highlight the errors and warnings"
+                },
+                "scssLint.runOnTextChange": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Determines if this extension should run when text changes on a document"
                 },
                 "scssLint.errorBackgroundColor": {
                     "type": "string",

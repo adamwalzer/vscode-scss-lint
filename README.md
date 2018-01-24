@@ -19,6 +19,7 @@ The extension has only been tested with version .0.49.0 of scss_lint and above.
 
 This extension runs scss-lint which uses your .scss-lint.yml file. Simply install the extension, and it works for .scss files.
 scssLint.showHighlights sets whether or not to show highlights in addition to underlines.
+scssLint.runOnTextChange determines if this extension should run when text changes on a document.
 scssLint.errorBackgroundColor sets the error background color and defaults to "rgba(200, 0, 0, .8)".
 scssLint.warningBackgroundColor sets the warning background color and defaults to "rgba(200, 120, 0, .8)".
 scssLint.languages sets the languages this extension works with. It defaults to ["scss"]. To add css make it ["scss", "css"].
@@ -29,6 +30,7 @@ Default settings
 ```settings.json
 {
     "scssLint.showHighlights": false,
+    "scssLint.runOnTextChange": false,
     "scssLint.errorBackgroundColor": "rgba(200, 0, 0, .8)",
     "scssLint.warningBackgroundColor": "rgba(200, 120, 0, .8)",
     "scssLint.languages": [
@@ -44,6 +46,7 @@ To add css support change to this:
 ```settings.json
 {
     "scssLint.showHighlights": false,
+    "scssLint.runOnTextChange": false,
     "scssLint.errorBackgroundColor": "rgba(200, 0, 0, .8)",
     "scssLint.warningBackgroundColor": "rgba(200, 120, 0, .8)",
     "scssLint.languages": [

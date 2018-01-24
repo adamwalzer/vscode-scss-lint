@@ -28,6 +28,7 @@ const {
     languages,
     statusBarText,
     showHighlights,
+    runOnTextChange,
     configDir,
 } = workspace.getConfiguration('scssLint');
 
@@ -87,7 +88,7 @@ class ErrorFinder {
         if (~languages.indexOf(doc.languageId)) {
             const dir = (workspace.rootPath || '') + SEPARATOR; // workspace.rootPath may be null on windows
             const fileName = doc.fileName.replace(dir, '');
-            let cmd = `cd ${dir} && scss-lint -c ${configDir + '.scss-lint.yml'} --no-color ${fileName}`;
+            let cmd = `cd ${dir} && echo "${doc.getText()}" | scss-lint -c ${configDir + '.scss-lint.yml'} --no-color --stdin-file-path=${fileName}`;
             let configFileDir = configDir;
 
             if (!configDir) {
@@ -95,7 +96,7 @@ class ErrorFinder {
                 try {
                     const startingDir = doc.fileName.substring(0, doc.fileName.lastIndexOf(SEPARATOR));
                     configFileDir = findParentDir.sync(startingDir, '.scss-lint.yml') + (isWindows ? SEPARATOR : ''); // need \\ for windows
-                    cmd = `scss-lint -c ${configFileDir + '.scss-lint.yml'} --no-color ${doc.fileName}`;
+                    cmd = `echo "${doc.getText()}" | scss-lint -c ${configFileDir + '.scss-lint.yml'} --no-color --stdin-file-path=${doc.fileName}`;
                 } catch(err) {
                     console.error('error', err);
                 }
@@ -189,6 +190,10 @@ class ErrorFinderController {
         let subscriptions: Disposable[] = [];
         workspace.onDidSaveTextDocument(this._onEvent, this, subscriptions);
         window.onDidChangeActiveTextEditor(this._onEvent, this, subscriptions);
+
+        if (runOnTextChange) {
+            workspace.onDidChangeTextDocument(this._onEvent, this, subscriptions);
+        }
 
         // update the error finder for the current file
         this._errorFinder.finderErrors();
