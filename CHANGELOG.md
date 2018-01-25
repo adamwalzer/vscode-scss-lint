@@ -1,6 +1,14 @@
 # Change Log
 All notable changes to the "scss-lint" extension will be documented in this file.
 
+### [0.0.21]
+
+Make sure that special characters don't mess up execution in bash.
+
+### [0.0.20]
+
+Add variable to allow extension to run on text change.
+
 ### [0.0.19]
 
 Report scss-lint exit codes as errors in config file.

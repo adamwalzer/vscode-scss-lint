@@ -88,7 +88,8 @@ class ErrorFinder {
         if (~languages.indexOf(doc.languageId)) {
             const dir = (workspace.rootPath || '') + SEPARATOR; // workspace.rootPath may be null on windows
             const fileName = doc.fileName.replace(dir, '');
-            let cmd = `cd ${dir} && echo "${doc.getText()}" | scss-lint -c ${configDir + '.scss-lint.yml'} --no-color --stdin-file-path=${fileName}`;
+            const docCopy = doc.getText().replace(/\$/g, '\\$').replace(/\"/g, '\\"');
+            let cmd = `cd ${dir} && echo "${docCopy}" | scss-lint -c ${configDir + '.scss-lint.yml'} --no-color --stdin-file-path=${fileName}`;
             let configFileDir = configDir;
 
             if (!configDir) {
@@ -96,7 +97,7 @@ class ErrorFinder {
                 try {
                     const startingDir = doc.fileName.substring(0, doc.fileName.lastIndexOf(SEPARATOR));
                     configFileDir = findParentDir.sync(startingDir, '.scss-lint.yml') + (isWindows ? SEPARATOR : ''); // need \\ for windows
-                    cmd = `echo "${doc.getText()}" | scss-lint -c ${configFileDir + '.scss-lint.yml'} --no-color --stdin-file-path=${doc.fileName}`;
+                    cmd = `echo "${docCopy}" | scss-lint -c ${configFileDir + '.scss-lint.yml'} --no-color --stdin-file-path=${doc.fileName}`;
                 } catch(err) {
                     console.error('error', err);
                 }
