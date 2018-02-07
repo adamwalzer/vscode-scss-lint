@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to the "scss-lint" extension will be documented in this file.
 
+### [0.0.22]
+
+Fixed issues preventing the extension from working on windows.
+
 ### [0.0.21]
 
 Make sure that special characters don't mess up execution in bash.
@@ -15,7 +19,7 @@ Report scss-lint exit codes as errors in config file.
 
 ### [0.0.18]
 
-Add Windows compatability. [@DrChills](https://github.com/DrChills)
+Add Windows compatibility. [@DrChills](https://github.com/DrChills)
 
 ### [0.0.17]
 

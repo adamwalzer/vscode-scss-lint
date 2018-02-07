@@ -88,8 +88,15 @@ class ErrorFinder {
         if (~languages.indexOf(doc.languageId)) {
             const dir = (workspace.rootPath || '') + SEPARATOR; // workspace.rootPath may be null on windows
             const fileName = doc.fileName.replace(dir, '');
-            const docCopy = doc.getText().replace(/\$/g, '\\$').replace(/\"/g, '\\"');
-            let cmd = `cd ${dir} && echo "${docCopy}" | scss-lint -c ${configDir + '.scss-lint.yml'} --no-color --stdin-file-path=${fileName}`;
+            let docCopy = doc.getText();
+            if (isWindows) {
+                docCopy = docCopy.replace(/\r\n/g, '%NL%').replace(/\&/g, '%AMP%').replace(/\|/g, '%PIPE%').replace(/\>/g, '%CHEV%');
+            } else {
+                docCopy = docCopy.replace(/\$/g, '\\$').replace(/\"/g, '\\"');
+            }
+            const configObj = isWindows ? {env: {NL: '^& echo.', AMP: '^^^&', PIPE: '^^^|', CHEV: '^^^>'}} : null;
+            const q = isWindows ? '' : '"';
+            let cmd = `cd ${dir} && echo ${q}${docCopy}${q}| scss-lint -c ${configDir + '.scss-lint.yml'} --no-color --stdin-file-path=${fileName}`;
             let configFileDir = configDir;
 
             if (!configDir) {
@@ -97,13 +104,13 @@ class ErrorFinder {
                 try {
                     const startingDir = doc.fileName.substring(0, doc.fileName.lastIndexOf(SEPARATOR));
                     configFileDir = findParentDir.sync(startingDir, '.scss-lint.yml') + (isWindows ? SEPARATOR : ''); // need \\ for windows
-                    cmd = `echo "${docCopy}" | scss-lint -c ${configFileDir + '.scss-lint.yml'} --no-color --stdin-file-path=${doc.fileName}`;
+                    cmd = `echo ${q}${docCopy}${q}| scss-lint -c ${configFileDir + '.scss-lint.yml'} --no-color --stdin-file-path=${doc.fileName}`;
                 } catch(err) {
                     console.error('error', err);
                 }
             }
 
-            exec(cmd, (err, stdout) => {
+            exec(cmd, configObj, (err, stdout) => {
                 const lines = stdout.toString().split('\n');
 
                 const {

@@ -6,11 +6,11 @@ This is a small scss-lint extension for vscode.
 
 ## Features
 
-This extention runs scss-lint in bash and displays the errors found by underlining and/or highlighting the errors in your scss files upon saving of that file.
+This extension runs scss-lint in bash and displays the errors found by underlining and/or highlighting the errors in your scss files upon saving of that file.
 
 ## Requirements
 
-This extention is dependant on the ruby gem scss-lint. To install the gem run the following in your terminal:
+This extension is dependent on the ruby gem scss-lint. To install the gem run the following in your terminal:
 `gem install scss_lint`
 
 The extension has only been tested with version .0.49.0 of scss_lint and above.
