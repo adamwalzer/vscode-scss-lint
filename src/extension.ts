@@ -46,6 +46,15 @@ const warningDecorationType = window.createTextEditorDecorationType({
 
 const isWindows = /^win/.test(process.platform);
 const SEPARATOR = isWindows ? '\\' : '/';
+const DIR_END_CHAR = isWindows ? SEPARATOR : ''; // need \\ for windows
+const Q = isWindows ? '' : '"';
+const CONFIG_OBJ = isWindows ? {env: {NL: '^& echo.', AMP: '^^^&', PIPE: '^^^|', CHEV: '^^^>'}} : null;
+
+const getDocCopy = (docText) => (
+    isWindows ?
+    docText.replace(/\r\n/g, '%NL%').replace(/\&/g, '%AMP%').replace(/\|/g, '%PIPE%').replace(/\>/g, '%CHEV%') :
+    docText.replace(/\$/g, '\\$').replace(/\"/g, '\\"')
+);
 
 // This method is called when your extension is activated. Activation is
 // controlled by the activation events defined in package.json.
@@ -88,29 +97,22 @@ class ErrorFinder {
         if (~languages.indexOf(doc.languageId)) {
             const dir = (workspace.rootPath || '') + SEPARATOR; // workspace.rootPath may be null on windows
             const fileName = doc.fileName.replace(dir, '');
-            let docCopy = doc.getText();
-            if (isWindows) {
-                docCopy = docCopy.replace(/\r\n/g, '%NL%').replace(/\&/g, '%AMP%').replace(/\|/g, '%PIPE%').replace(/\>/g, '%CHEV%');
-            } else {
-                docCopy = docCopy.replace(/\$/g, '\\$').replace(/\"/g, '\\"');
-            }
-            const configObj = isWindows ? {env: {NL: '^& echo.', AMP: '^^^&', PIPE: '^^^|', CHEV: '^^^>'}} : null;
-            const q = isWindows ? '' : '"';
-            let cmd = `cd ${dir} && echo ${q}${docCopy}${q}| scss-lint -c ${configDir + '.scss-lint.yml'} --no-color --stdin-file-path=${fileName}`;
+            const docCopy = getDocCopy(doc.getText());
             let configFileDir = configDir;
+            let cmd = `cd "${dir}" && echo ${Q}${docCopy}${Q}| scss-lint -c "${configFileDir + '.scss-lint.yml'}" --no-color --stdin-file-path="${fileName}"`;
 
             if (!configDir) {
                 // Find and set nearest config file
                 try {
                     const startingDir = doc.fileName.substring(0, doc.fileName.lastIndexOf(SEPARATOR));
-                    configFileDir = findParentDir.sync(startingDir, '.scss-lint.yml') + (isWindows ? SEPARATOR : ''); // need \\ for windows
-                    cmd = `echo ${q}${docCopy}${q}| scss-lint -c ${configFileDir + '.scss-lint.yml'} --no-color --stdin-file-path=${doc.fileName}`;
+                    configFileDir = findParentDir.sync(startingDir, '.scss-lint.yml') + DIR_END_CHAR;
+                    cmd = `echo ${Q}${docCopy}${Q}| scss-lint -c "${configFileDir + '.scss-lint.yml'}" --no-color --stdin-file-path="${doc.fileName}"`;
                 } catch(err) {
                     console.error('error', err);
                 }
             }
 
-            exec(cmd, configObj, (err, stdout) => {
+            exec(cmd, CONFIG_OBJ, (err, stdout) => {
                 const lines = stdout.toString().split('\n');
 
                 const {
@@ -166,8 +168,7 @@ class ErrorFinder {
                         editor.setDecorations(warningDecorationType, warnings);
                     }
 
-                    let configUri = Uri.parse(configFileDir + '.scss-lint.yml');
-                    configUri = configUri.with({scheme: 'file'});
+                    const configUri = Uri.parse(configFileDir + '.scss-lint.yml').with({scheme: 'file'});
                     this._diagnosticCollection.set(configUri, exits);
                     this._diagnosticCollection.set(doc.uri, diagnostics);
 
