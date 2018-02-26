@@ -53,7 +53,7 @@ const CONFIG_OBJ = isWindows ? {env: {NL: '^& echo.', AMP: '^^^&', PIPE: '^^^|',
 const getDocCopy = (docText) => (
     isWindows ?
     docText.replace(/\r\n/g, '%NL%').replace(/\&/g, '%AMP%').replace(/\|/g, '%PIPE%').replace(/\>/g, '%CHEV%') :
-    docText.replace(/\$/g, '\\$').replace(/\"/g, '\\"')
+    docText.replace(/\\/g, '\\\\\\').replace(/\`/g, '\\`').replace(/\$/g, '\\$').replace(/\"/g, '\\"')
 );
 
 // This method is called when your extension is activated. Activation is

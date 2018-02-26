@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to the "scss-lint" extension will be documented in this file.
 
+### [0.1.1]
+
+Fixed issues caused by special characters in scss files.
+
 ### [0.1.0]
 
 Fixed issues when running on files with spaces in path. Cleaned up code for clarity and efficiency.
