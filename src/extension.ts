@@ -99,14 +99,16 @@ class ErrorFinder {
             const fileName = doc.fileName.replace(dir, '');
             const docCopy = getDocCopy(doc.getText());
             let configFileDir = configDir;
-            let cmd = `cd "${dir}" && echo ${Q}${docCopy}${Q}| scss-lint -c "${configFileDir + '.scss-lint.yml'}" --no-color --stdin-file-path="${fileName}"`;
+            let configCmd = configFileDir ? `-c "${configFileDir + '.scss-lint.yml'}" ` : '';
+            let cmd = `cd "${dir}" && echo ${Q}${docCopy}${Q}| scss-lint ${configCmd}--no-color --stdin-file-path="${fileName}"`;
 
             if (!configDir) {
                 // Find and set nearest config file
                 try {
                     const startingDir = doc.fileName.substring(0, doc.fileName.lastIndexOf(SEPARATOR));
                     configFileDir = findParentDir.sync(startingDir, '.scss-lint.yml') + DIR_END_CHAR;
-                    cmd = `echo ${Q}${docCopy}${Q}| scss-lint -c "${configFileDir + '.scss-lint.yml'}" --no-color --stdin-file-path="${doc.fileName}"`;
+                    configCmd = configFileDir && configFileDir !== 'null' ? `-c "${configFileDir + '.scss-lint.yml'}" ` : '';
+                    cmd = `echo ${Q}${docCopy}${Q}| scss-lint ${configCmd}--no-color --stdin-file-path="${doc.fileName}"`;
                 } catch(err) {
                     console.error('error', err);
                 }
