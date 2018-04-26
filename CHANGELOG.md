@@ -1,17 +1,25 @@
 # Change Log
 All notable changes to the "scss-lint" extension will be documented in this file.
 
+### [0.1.3]
+
+Removed --no-color from the bash command which was causing issues for some users. Issue reported by [@mazikwyry](https://github.com/mazikwyry)
+
+### [0.1.2]
+
+Made the extension work when there is no config file. Should there be a flag to turn this off? Issue reported by [@explorador](https://github.com/explorador)
+
 ### [0.1.1]
 
-Fixed issues caused by special characters in scss files.
+Fixed issues caused by special characters in scss files. Issue reported by [@afridley](https://github.com/afridley)
 
 ### [0.1.0]
 
-Fixed issues when running on files with spaces in path. Cleaned up code for clarity and efficiency.
+Added config to allow extension to run on text change. Fixed issues when running on files with spaces in path. Cleaned up code for clarity and efficiency. Issue reported by [@freszyk](https://github.com/freszyk)
 
 ### [0.0.22]
 
-Fixed issues preventing the extension from working on windows.
+Fixed issues preventing the extension from working on windows. Issue reported by [@felipecesr](https://github.com/felipecesr)
 
 ### [0.0.21]
 
@@ -19,7 +27,7 @@ Make sure that special characters don't mess up execution in bash.
 
 ### [0.0.20]
 
-Add variable to allow extension to run on text change.
+Add variable to allow extension to run on text change. Feature requested by [@freszyk](https://github.com/freszyk)
 
 ### [0.0.19]
 
@@ -31,7 +39,7 @@ Add Windows compatibility. [@DrChills](https://github.com/DrChills)
 
 ### [0.0.17]
 
-Add the ability to change the config directory.
+Add the ability to change the config directory. Feature requested by [@viviangb](https://github.com/viviangb)
 
 ### [0.0.16]
 
@@ -39,11 +47,11 @@ Make this extension underline instead of highlight but create a config to highli
 
 ### [0.0.15]
 
-Make statusBarText an option. Prevent logging on the wrong files.
+Make statusBarText an option. Prevent logging on the wrong files. Issue reported by [@AndrewRayCode](https://github.com/AndrewRayCode)
 
 ### [0.0.14]
 
-Adding warning count to the status bar.
+Adding warning count to the status bar. Feature request by [@donni106](https://github.com/donni106)
 
 ### [0.0.13]
 
@@ -55,7 +63,7 @@ Added language support for css. scssLint.languages is an array that controls wha
 
 ### [0.0.11]
 
-Adding in warnings as well as scssLint.errorBackgroundColor and scssLint.warningBackgroundColor configurations.
+Adding in warnings as well as scssLint.errorBackgroundColor and scssLint.warningBackgroundColor configurations. Issue reported by [@andykenward](https://github.com/andykenward) and fixed confirmed by [@chialin](https://github.com/chialin)
 
 ### [0.0.10]
 
@@ -71,7 +79,7 @@ An unsuccessful debug attempt.
 
 ### [0.0.7]
 
-[@youdame](https://github.com/yoodame)'s PR makes this extension work even when the .scss-lint.yml isn't in the root directory of the project.
+[@youdame](https://github.com/yoodame)'s PR makes this extension work even when the .scss-lint.yml isn't in the root directory of the project. Issue originally reported by [@mkallies](https://github.com/mkallies)
 
 ### [0.0.6]
 
