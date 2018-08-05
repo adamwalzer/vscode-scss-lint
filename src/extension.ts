@@ -22,7 +22,7 @@ import {
 const exec = require('child_process').exec;
 const findParentDir = require('find-parent-dir');
 
-const {
+let {
     errorBackgroundColor,
     warningBackgroundColor,
     languages,
@@ -32,17 +32,31 @@ const {
     configDir,
 } = workspace.getConfiguration('scssLint');
 
-const errorDecorationType = window.createTextEditorDecorationType({
-    backgroundColor: errorBackgroundColor,
-    overviewRulerColor: errorBackgroundColor,
-    overviewRulerLane: 2,
-});
+let errorDecorationType;
+let warningDecorationType;
 
-const warningDecorationType = window.createTextEditorDecorationType({
-    backgroundColor: warningBackgroundColor,
-    overviewRulerColor: warningBackgroundColor,
-    overviewRulerLane: 2,
-});
+const updateConfig = () => {
+    const newConfig = workspace.getConfiguration('scssLint');
+    errorBackgroundColor = newConfig.errorBackgroundColor;
+    warningBackgroundColor = newConfig.warningBackgroundColor;
+    languages = newConfig.languages;
+    statusBarText = newConfig.statusBarText;
+    showHighlights = newConfig.showHighlights;
+    runOnTextChange = newConfig.runOnTextChange;
+    configDir = newConfig.configDir;
+
+    errorDecorationType = window.createTextEditorDecorationType({
+        backgroundColor: errorBackgroundColor,
+        overviewRulerColor: errorBackgroundColor,
+        overviewRulerLane: 2,
+    });
+
+    warningDecorationType = window.createTextEditorDecorationType({
+        backgroundColor: warningBackgroundColor,
+        overviewRulerColor: warningBackgroundColor,
+        overviewRulerLane: 2,
+    });
+};
 
 const isWindows = /^win/.test(process.platform);
 const SEPARATOR = isWindows ? '\\' : '/';
@@ -60,6 +74,8 @@ const getDocCopy = (docText) => (
 // controlled by the activation events defined in package.json.
 export function activate(context: ExtensionContext) {
     // create a new error finder
+    updateConfig();
+
     let errorFinder = new ErrorFinder();
     let controller = new ErrorFinderController(errorFinder);
 
@@ -90,6 +106,8 @@ class ErrorFinder {
             this._statusBarItem.hide();
             return;
         }
+
+        updateConfig();
 
         let doc = editor.document;
 
