@@ -38,7 +38,7 @@ let errorDecorationType;
 let warningDecorationType;
 
 const updateConfig = () => {
-    const newConfig = workspace.getConfiguration('scssLint');
+    const newConfig: any = workspace.getConfiguration('scssLint');
     errorBackgroundColor = newConfig.errorBackgroundColor;
     warningBackgroundColor = newConfig.warningBackgroundColor;
     languages = newConfig.languages;
