@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to the "scss-lint" extension will be documented in this file.
 
+### [0.1.4]
+
+Make extension properly respect file excludes. Issue reported by [@garyking](https://github.com/garyking)
+
 ### [0.1.3]
 
 Removed --no-color from the bash command which was causing issues for some users. Issue reported by [@mazikwyry](https://github.com/mazikwyry)

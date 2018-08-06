@@ -21,6 +21,8 @@ import {
 
 const exec = require('child_process').exec;
 const findParentDir = require('find-parent-dir');
+const glob = require("glob");
+const fs = require('fs');
 
 let {
     errorBackgroundColor,
@@ -112,94 +114,112 @@ class ErrorFinder {
         let doc = editor.document;
 
         // Only find errors if doc languageId is in languages array
-        if (~languages.indexOf(doc.languageId)) {
-            const dir = (workspace.rootPath || '') + SEPARATOR; // workspace.rootPath may be null on windows
-            const fileName = doc.fileName.replace(dir, '');
-            const docCopy = getDocCopy(doc.getText());
-            let configFileDir = configDir;
-            let configCmd = configFileDir ? `-c "${configFileDir + '.scss-lint.yml'}" ` : '';
-            let cmd = `cd "${dir}" && echo ${Q}${docCopy}${Q}| scss-lint ${configCmd} --stdin-file-path="${fileName}"`;
-
-            if (!configDir) {
-                // Find and set nearest config file
-                try {
-                    const startingDir = doc.fileName.substring(0, doc.fileName.lastIndexOf(SEPARATOR));
-                    configFileDir = findParentDir.sync(startingDir, '.scss-lint.yml') + DIR_END_CHAR;
-                    configCmd = configFileDir && configFileDir !== 'null' ? `-c "${configFileDir + '.scss-lint.yml'}" ` : '';
-                    cmd = `echo ${Q}${docCopy}${Q}| scss-lint ${configCmd} --stdin-file-path="${doc.fileName}"`;
-                } catch(err) {
-                    console.error('error', err);
-                }
-            }
-
-            exec(cmd, CONFIG_OBJ, (err, stdout) => {
-                const lines = stdout.toString().split('\n');
-
-                const {
-                    exits,
-                    errors,
-                    warnings,
-                    diagnostics,
-                } = lines.reduce((a, line) => {
-                    let info,
-                        severity;
-
-                    line = line.trim();
-
-                    if(~line.indexOf('[E]')) {
-                        info = line.match(/[^:]*:(\d+):(\d+) \[E\] (.*)$/);
-                        severity = DiagnosticSeverity.Error;
-                    } else if(~line.indexOf('[W]')) {
-                        info = line.match(/[^:]*:(\d+):(\d+) \[W\] (.*)$/);
-                        severity = DiagnosticSeverity.Warning;
-                    } else if (line) {
-                        info = [1, 1, 1, 'Error running scss-lint: ' + line];
-                    } else {
-                        return a;
-                    }
-
-                    const lineNum = parseInt(info[1], 10) - 1;
-                    const startPos = parseInt(info[2], 10) - 1;
-                    const message = info[3];
-                    const range = new Range(lineNum, startPos, lineNum + 1, 0);
-
-                    if(severity === DiagnosticSeverity.Error) {
-                        a.errors.push({ range, message });
-                        a.diagnostics.push(new Diagnostic(range, message, severity));
-                    } else if(severity === DiagnosticSeverity.Warning) {
-                        a.warnings.push({ range, message });
-                        a.diagnostics.push(new Diagnostic(range, message, severity));
-                    } else {
-                        severity === DiagnosticSeverity.Error;
-                        a.exits.push(new Diagnostic(range, message, severity));
-                    }
-
-                    return a;
-                }, {
-                    exits: [],
-                    errors: [],
-                    warnings: [],
-                    diagnostics: [],
-                });
-
-                if (editor === window.activeTextEditor) {
-                    if (showHighlights) {
-                        editor.setDecorations(errorDecorationType, errors);
-                        editor.setDecorations(warningDecorationType, warnings);
-                    }
-
-                    const configUri = Uri.parse(configFileDir + '.scss-lint.yml').with({scheme: 'file'});
-                    this._diagnosticCollection.set(configUri, exits);
-                    this._diagnosticCollection.set(doc.uri, diagnostics);
-
-                    // Update the status bar
-                    this._statusBarItem.text = eval(statusBarText);
-                    this._statusBarItem.show();
-                }
-            });
-        } else {
+        if (!~languages.indexOf(doc.languageId)) {
             this._statusBarItem.hide();
+            return;
         }
+
+        let configFileDir = configDir || '';
+
+        if (!configFileDir) {
+            // Find and set nearest config file
+            try {
+                const startingDir = doc.fileName.substring(0, doc.fileName.lastIndexOf(SEPARATOR));
+                configFileDir = findParentDir.sync(startingDir, '.scss-lint.yml') + DIR_END_CHAR;
+            } catch(err) {
+                console.error('error', err);
+            }
+        }
+
+        const scssLintPath = configFileDir && configFileDir !== 'null' ? configFileDir + '.scss-lint.yml' : '';
+
+        let exclude;
+        try {
+            const scssLint = fs.readFileSync(scssLintPath, 'utf8') || '';
+            exclude = scssLint.match(new RegExp('^exclude:(.*)', 'im'));
+        } catch(err) {
+            console.error('error', err);
+        }
+
+        if (exclude && exclude[1]) {
+            const excludePath = configFileDir + exclude[1].trim().replace(new RegExp('[\'"]', 'g'), '');
+            const excludeFiles = glob.sync(excludePath, {});
+            if (excludeFiles && excludeFiles.indexOf(doc.fileName) > -1) {
+                return; // this file should be excluded
+            }
+        }
+
+        const dir = configFileDir || ((workspace.rootPath || '') + SEPARATOR); // workspace.rootPath may be null on windows
+        const fileName = doc.fileName.replace(dir, '');
+        const docCopy = `${Q}${getDocCopy(doc.getText())}${Q}`;
+        const configCmd = scssLintPath ? `-c "${scssLintPath}" ` : '';
+        const cmd = `cd "${dir}" && echo ${docCopy}| scss-lint ${configCmd} --stdin-file-path="${fileName}"`;
+
+        exec(cmd, CONFIG_OBJ, (err, stdout) => {
+            const lines = stdout.toString().split('\n');
+
+            const {
+                exits,
+                errors,
+                warnings,
+                diagnostics,
+            } = lines.reduce((a, line) => {
+                let info,
+                    severity;
+
+                line = line.trim();
+
+                if(~line.indexOf('[E]')) {
+                    info = line.match(/[^:]*:(\d+):(\d+) \[E\] (.*)$/);
+                    severity = DiagnosticSeverity.Error;
+                } else if(~line.indexOf('[W]')) {
+                    info = line.match(/[^:]*:(\d+):(\d+) \[W\] (.*)$/);
+                    severity = DiagnosticSeverity.Warning;
+                } else if (line) {
+                    info = [1, 1, 1, 'Error running scss-lint: ' + line];
+                } else {
+                    return a;
+                }
+
+                const lineNum = parseInt(info[1], 10) - 1;
+                const startPos = parseInt(info[2], 10) - 1;
+                const message = info[3];
+                const range = new Range(lineNum, startPos, lineNum + 1, 0);
+
+                if(severity === DiagnosticSeverity.Error) {
+                    a.errors.push({ range, message });
+                    a.diagnostics.push(new Diagnostic(range, message, severity));
+                } else if(severity === DiagnosticSeverity.Warning) {
+                    a.warnings.push({ range, message });
+                    a.diagnostics.push(new Diagnostic(range, message, severity));
+                } else {
+                    severity === DiagnosticSeverity.Error;
+                    a.exits.push(new Diagnostic(range, message, severity));
+                }
+
+                return a;
+            }, {
+                exits: [],
+                errors: [],
+                warnings: [],
+                diagnostics: [],
+            });
+
+            if (editor === window.activeTextEditor) {
+                if (showHighlights) {
+                    editor.setDecorations(errorDecorationType, errors);
+                    editor.setDecorations(warningDecorationType, warnings);
+                }
+
+                const configUri = Uri.parse(configFileDir + '.scss-lint.yml').with({scheme: 'file'});
+                this._diagnosticCollection.set(configUri, exits);
+                this._diagnosticCollection.set(doc.uri, diagnostics);
+
+                // Update the status bar
+                this._statusBarItem.text = eval(statusBarText);
+                this._statusBarItem.show();
+            }
+        });
     }
 
     dispose() {
