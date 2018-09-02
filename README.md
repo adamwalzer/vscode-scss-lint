@@ -41,20 +41,20 @@ Default settings
 }
 ```
 
-To add css support change to this:
+Example settings updates:
 
 ```settings.json
 {
     "scssLint.showHighlights": false,
-    "scssLint.runOnTextChange": false,
-    "scssLint.errorBackgroundColor": "rgba(200, 0, 0, .8)",
-    "scssLint.warningBackgroundColor": "rgba(200, 120, 0, .8)",
+    "scssLint.runOnTextChange": true,
+    "scssLint.errorBackgroundColor": "rgba(200, 50, 50, .8)",
+    "scssLint.warningBackgroundColor": "rgba(200, 100, 20, .8)",
     "scssLint.languages": [
         "css",
         "scss"
     ],
-    "scssLint.statusBarText": "`$(telescope) scss-lint  ${errors.length} $(x)  ${warnings.length} $(alert)`",
-    "scssLint.configDir": ""
+    "scssLint.statusBarText": "`$(telescope) scss-lint ${errors.length} $(x)`",
+    "scssLint.configDir": "/Users/adam/"
 }
 ```
 

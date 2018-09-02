@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to the "scss-lint" extension will be documented in this file.
 
+### [0.1.5]
+
+Update the readme to better explain configDir. Issue reported by [@amaisano](https://github.com/amaisano)
+
 ### [0.1.4]
 
 Make extension properly respect file excludes. Issue reported by [@garyking](https://github.com/garyking)
