@@ -23,7 +23,9 @@ const exec = require('child_process').exec;
 const findParentDir = require('find-parent-dir');
 const glob = require("glob");
 const fs = require('fs');
+const path = require('path');
 
+let configDirIsSet = false;
 let {
     errorBackgroundColor,
     warningBackgroundColor,
@@ -45,7 +47,8 @@ const updateConfig = () => {
     statusBarText = newConfig.statusBarText;
     showHighlights = newConfig.showHighlights;
     runOnTextChange = newConfig.runOnTextChange;
-    configDir = newConfig.configDir;
+    configDir = path.join(newConfig.configDir, './');
+    configDirIsSet = !!newConfig.configDir;
 
     errorDecorationType = window.createTextEditorDecorationType({
         backgroundColor: errorBackgroundColor,
@@ -61,8 +64,6 @@ const updateConfig = () => {
 };
 
 const isWindows = /^win/.test(process.platform);
-const SEPARATOR = isWindows ? '\\' : '/';
-const DIR_END_CHAR = isWindows ? SEPARATOR : ''; // need \\ for windows
 const Q = isWindows ? '' : '"';
 const CONFIG_OBJ = isWindows ? {env: {NL: '^& echo.', AMP: '^^^&', PIPE: '^^^|', CHEV: '^^^>'}} : null;
 
@@ -120,25 +121,36 @@ class ErrorFinder {
         }
 
         let configFileDir = configDir || '';
+        let foundFile = true;
 
-        if (!configFileDir) {
+        if (!configDirIsSet) {
             // Find and set nearest config file
             try {
-                const startingDir = doc.fileName.substring(0, doc.fileName.lastIndexOf(SEPARATOR));
-                configFileDir = findParentDir.sync(startingDir, '.scss-lint.yml') + DIR_END_CHAR;
+                const startingDir = path.dirname(doc.fileName);
+                configFileDir = path.join(findParentDir.sync(startingDir, '.scss-lint.yml'), './');
             } catch(err) {
-                console.error('error', err);
+                foundFile = false;
+                console.error('error', 'findParentDir');
             }
         }
 
-        const scssLintPath = configFileDir && configFileDir !== 'null' ? configFileDir + '.scss-lint.yml' : '';
+        const hasConfigFileDir = configFileDir && configFileDir !== 'null';
+
+        if (hasConfigFileDir && !path.isAbsolute(configFileDir)) {
+            configFileDir = path.join(workspace.rootPath || '', configFileDir);
+        }
+
+        let scssLintPath = hasConfigFileDir && foundFile ? path.join(configFileDir, '.scss-lint.yml') : '';
 
         let exclude;
-        try {
-            const scssLint = fs.readFileSync(scssLintPath, 'utf8') || '';
-            exclude = scssLint.match(new RegExp('^exclude:(.*)', 'im'));
-        } catch(err) {
-            console.error('error', err);
+        if (scssLintPath) {
+            try {
+                const scssLint = fs.readFileSync(scssLintPath, 'utf8') || '';
+                exclude = scssLint.match(new RegExp('^exclude:(.*)', 'im'));
+            } catch(err) {
+                console.error('error', `fs ${scssLintPath}`);
+                scssLintPath = '';
+            }
         }
 
         if (exclude && exclude[1]) {
@@ -149,11 +161,9 @@ class ErrorFinder {
             }
         }
 
-        const dir = configFileDir || ((workspace.rootPath || '') + SEPARATOR); // workspace.rootPath may be null on windows
-        const fileName = doc.fileName.replace(dir, '');
         const docCopy = `${Q}${getDocCopy(doc.getText())}${Q}`;
         const configCmd = scssLintPath ? `-c "${scssLintPath}" ` : '';
-        const cmd = `cd "${dir}" && echo ${docCopy}| scss-lint ${configCmd} --stdin-file-path="${fileName}"`;
+        const cmd = `echo ${docCopy}| scss-lint ${configCmd} --stdin-file-path="${doc.fileName}"`;
 
         exec(cmd, CONFIG_OBJ, (err, stdout) => {
             const lines = stdout.toString().split('\n');

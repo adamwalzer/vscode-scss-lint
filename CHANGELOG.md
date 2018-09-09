@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to the "scss-lint" extension will be documented in this file.
 
+### [0.1.6]
+
+Update the way we deal with paths to work better cross-platform. This should help with Windows. This also makes the extension fall back to the default settings of scss-lint if there is no .scss-lint.yml file found even when a configDir is set. Issue reported by [@entozoon](https://github.com/entozoon)
+
 ### [0.1.5]
 
 Update the readme to better explain configDir. Issue reported by [@amaisano](https://github.com/amaisano)

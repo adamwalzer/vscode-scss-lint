@@ -1,7 +1,7 @@
 {
   "name": "scss-lint",
   "displayName": "scss-lint",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "icon": "images/icon.png",
   "description": "a scss-lint extension for vscode",
   "publisher": "adamwalzer",
@@ -77,7 +77,8 @@
   },
   "dependencies": {
     "find-parent-dir": "^0.3.0",
-    "glob": "^7.1.2"
+    "glob": "^7.1.2",
+    "path": "^0.12.7"
   },
   "devDependencies": {
     "@types/mocha": "^2.2.32",
