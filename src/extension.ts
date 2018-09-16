@@ -143,10 +143,19 @@ class ErrorFinder {
         let scssLintPath = hasConfigFileDir && foundFile ? path.join(configFileDir, '.scss-lint.yml') : '';
 
         let exclude;
+        let finalNewLine = 2;
         if (scssLintPath) {
             try {
                 const scssLint = fs.readFileSync(scssLintPath, 'utf8') || '';
                 exclude = scssLint.match(new RegExp('^exclude:(.*)', 'im'));
+
+                const finalNewLineDisabled = /FinalNewLine:\n*?.*?\n*?.*?enabled: false/im.test(scssLint);
+                const finalNewLineError = /FinalNewLine:\n*?.*?\n*?.*?severity: error/im.test(scssLint);
+                if (finalNewLineDisabled) {
+                    finalNewLine = 0;
+                } else if (finalNewLineError) {
+                    finalNewLine = 1;
+                }
             } catch(err) {
                 console.error('error', `fs ${scssLintPath}`);
                 scssLintPath = '';
@@ -161,7 +170,8 @@ class ErrorFinder {
             }
         }
 
-        const docCopy = `${Q}${getDocCopy(doc.getText())}${Q}`;
+        const docText = doc.getText();
+        const docCopy = `${Q}${getDocCopy(docText)}${Q}`;
         const configCmd = scssLintPath ? `-c "${scssLintPath}" ` : '';
         const cmd = `echo ${docCopy}| scss-lint ${configCmd} --stdin-file-path="${doc.fileName}"`;
 
@@ -215,13 +225,25 @@ class ErrorFinder {
                 diagnostics: [],
             });
 
+            if (finalNewLine) {
+                const hasNewLine = /\n$/.test(docText);
+                if (!hasNewLine) {
+                    const lineNum = docText.split(/\n/).length - 1;
+                    const range = new Range(lineNum, 0, lineNum + 1, 0);
+                    const severity = finalNewLine === 1 ? DiagnosticSeverity.Error : DiagnosticSeverity.Warning;
+                    diagnostics.push(new Diagnostic(range, 'FinalNewline: Files should end with a trailing newline', severity));
+                    const issue = { range, message: 'FinalNewline: Files should end with a trailing newline' };
+                    (finalNewLine === 1 ? errors : warnings).push(issue);
+                }
+            }
+
             if (editor === window.activeTextEditor) {
                 if (showHighlights) {
                     editor.setDecorations(errorDecorationType, errors);
                     editor.setDecorations(warningDecorationType, warnings);
                 }
 
-                const configUri = Uri.parse(configFileDir + '.scss-lint.yml').with({scheme: 'file'});
+                const configUri = Uri.parse(path.join(configFileDir, '.scss-lint.yml')).with({scheme: 'file'});
                 this._diagnosticCollection.set(configUri, exits);
                 this._diagnosticCollection.set(doc.uri, diagnostics);
 

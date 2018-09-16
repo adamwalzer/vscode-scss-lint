@@ -1,7 +1,7 @@
 {
   "name": "scss-lint",
   "displayName": "scss-lint",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "icon": "images/icon.png",
   "description": "a scss-lint extension for vscode",
   "publisher": "adamwalzer",

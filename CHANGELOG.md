@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to the "scss-lint" extension will be documented in this file.
 
+### [0.1.8]
+
+Include FinalNewLine in extension. Issue reported by [@phc284](https://github.com/phc284)
+
 ### [0.1.7]
 
 Update regex to match LF line endings as well as CRLF. Issue reported and resolved by [@entozoon](https://github.com/entozoon)
