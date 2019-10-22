@@ -16,8 +16,8 @@ import {
     DiagnosticCollection,
     DiagnosticSeverity,
     Diagnostic,
-    Uri,
 } from 'vscode';
+import { URI } from 'vscode-uri';
 
 const exec = require('child_process').exec;
 const findParentDir = require('find-parent-dir');
@@ -243,7 +243,7 @@ class ErrorFinder {
                     editor.setDecorations(warningDecorationType, warnings);
                 }
 
-                const configUri = Uri.parse(path.join(configFileDir, '.scss-lint.yml')).with({scheme: 'file'});
+                const configUri = URI.file(path.join(configFileDir, '.scss-lint.yml'));
                 this._diagnosticCollection.set(configUri, exits);
                 this._diagnosticCollection.set(doc.uri, diagnostics);
 
