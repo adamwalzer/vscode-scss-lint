@@ -2,17 +2,13 @@
 // Import the necessary extensibility types to use in your code below
 import {
     window,
-    commands,
     workspace,
     Disposable,
     ExtensionContext,
     StatusBarAlignment,
     StatusBarItem,
-    TextDocument,
     Range,
     languages as langs,
-    DecorationOptions,
-    OverviewRulerLane,
     DiagnosticCollection,
     DiagnosticSeverity,
     Diagnostic,
@@ -24,6 +20,13 @@ const findParentDir = require('find-parent-dir');
 const glob = require("glob");
 const fs = require('fs');
 const path = require('path');
+
+const CHANGE = {
+    INIT: 'INIT',
+    SAVE: 'SAVE',
+    ACTIVE: 'ACTIVE',
+    TEXT: 'TEXT',
+};
 
 let configDirIsSet = false;
 let {
@@ -67,11 +70,19 @@ const isWindows = /^win/.test(process.platform);
 const Q = isWindows ? '' : '"';
 const CONFIG_OBJ = isWindows ? {env: {NL: '^& echo.', AMP: '^^^&', PIPE: '^^^|', CHEV: '^^^>'}} : null;
 
-const getDocCopy = (docText) => (
-    isWindows ?
-    docText.replace(/\n/g, '%NL%').replace(/\&/g, '%AMP%').replace(/\|/g, '%PIPE%').replace(/\>/g, '%CHEV%') :
-    docText.replace(/\\/g, '\\\\\\').replace(/\`/g, '\\`').replace(/\$/g, '\\$').replace(/\"/g, '\\"')
-);
+const getDocCopy = isWindows ?
+    docText => docText
+        .replace(/\r/g, '')
+        .replace(/\n/g, '%NL%')
+        .replace(/\&/g, '%AMP%')
+        .replace(/\|/g, '%PIPE%')
+        .replace(/\>/g, '%CHEV%') :
+    docText => docText
+        .replace(/\r/g, '')
+        .replace(/\\/g, '\\\\\\')
+        .replace(/\`/g, '\\`')
+        .replace(/\$/g, '\\$')
+        .replace(/\"/g, '\\"');
 
 // This method is called when your extension is activated. Activation is
 // controlled by the activation events defined in package.json.
@@ -98,7 +109,7 @@ class ErrorFinder {
         this._statusBarItem = window.createStatusBarItem(StatusBarAlignment.Left);
     }
 
-    public finderErrors() {
+    public finderErrors(changeType) {
 
         // Create as needed
         if (!this._statusBarItem) return;
@@ -170,10 +181,15 @@ class ErrorFinder {
             }
         }
 
+        const isText = changeType === CHANGE.TEXT;
+
         const docText = doc.getText();
         const docCopy = `${Q}${getDocCopy(docText)}${Q}`;
         const configCmd = scssLintPath ? `-c "${scssLintPath}" ` : '';
-        const cmd = `echo ${docCopy}| scss-lint ${configCmd} --stdin-file-path="${doc.fileName}"`;
+        const echoCmd = isText ? `echo ${docCopy}| ` : '';
+        const pathCmd = isText ? '' : `${doc.fileName} `;
+        const fileCmd = isText ? `--stdin-file-path="${doc.fileName}"` : '';
+        const cmd = `${echoCmd}scss-lint ${pathCmd}${configCmd}${fileCmd}`;
 
         exec(cmd, CONFIG_OBJ, (err, stdout) => {
             const lines = stdout.toString().split('\n');
@@ -269,15 +285,15 @@ class ErrorFinderController {
 
         // subscribe to selection change and editor activation events
         let subscriptions: Disposable[] = [];
-        workspace.onDidSaveTextDocument(this._onEvent, this, subscriptions);
-        window.onDidChangeActiveTextEditor(this._onEvent, this, subscriptions);
+        workspace.onDidSaveTextDocument(this._onEvent(CHANGE.SAVE), this, subscriptions);
+        window.onDidChangeActiveTextEditor(this._onEvent(CHANGE.ACTIVE), this, subscriptions);
 
         if (runOnTextChange) {
-            workspace.onDidChangeTextDocument(this._onEvent, this, subscriptions);
+            workspace.onDidChangeTextDocument(this._onEvent(CHANGE.TEXT), this, subscriptions);
         }
 
         // update the error finder for the current file
-        this._errorFinder.finderErrors();
+        this._errorFinder.finderErrors(CHANGE.INIT);
 
         // create a combined disposable from both event subscriptions
         this._disposable = Disposable.from(...subscriptions);
@@ -287,7 +303,7 @@ class ErrorFinderController {
         this._disposable.dispose();
     }
 
-    private _onEvent() {
-        this._errorFinder.finderErrors();
+    private _onEvent(type) {
+        return () => this._errorFinder.finderErrors(type);
     }
 }

@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to the "scss-lint" extension will be documented in this file.
 
+### [0.1.10]
+
+Update to no longer echo the file unless running on text change.
+
 ### [0.1.9]
 
 Use vscode-uri package for parsing file uri.
