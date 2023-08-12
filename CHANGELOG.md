@@ -1,5 +1,12 @@
 # Change Log
+
 All notable changes to the "scss-lint" extension will be documented in this file.
+
+## Versions
+
+### [0.1.11]
+
+No longer eval statusBarText for security purposes.
 
 ### [0.1.10]
 

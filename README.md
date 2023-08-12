@@ -23,7 +23,7 @@ scssLint.runOnTextChange determines if this extension should run when text chang
 scssLint.errorBackgroundColor sets the error background color and defaults to "rgba(200, 0, 0, .8)".
 scssLint.warningBackgroundColor sets the warning background color and defaults to "rgba(200, 120, 0, .8)".
 scssLint.languages sets the languages this extension works with. It defaults to ["scss"]. To add css make it ["scss", "css"].
-scssLint.statusBarText sets what the status bar text should read.
+scssLint.statusBarText sets what the status bar text should read. For security purposes, this is no longer evaluated. Variables that will be replaced include `${diagnostics.length}`, `${errors.length}`, `${exits.length}`, and `${warnings.length}`. Additionally, any \` is removed.
 
 Default settings
 
@@ -36,7 +36,7 @@ Default settings
     "scssLint.languages": [
         "scss"
     ],
-    "scssLint.statusBarText": "`$(telescope) scss-lint  ${errors.length} $(x)  ${warnings.length} $(alert)`",
+    "scssLint.statusBarText": "$(telescope) scss-lint  ${errors.length} $(x)  ${warnings.length} $(alert)",
     "scssLint.configDir": ""
 }
 ```
@@ -53,7 +53,7 @@ Example settings updates:
         "css",
         "scss"
     ],
-    "scssLint.statusBarText": "`$(telescope) scss-lint ${errors.length} $(x)`",
+    "scssLint.statusBarText": "$(telescope) scss-lint ${errors.length} $(x)",
     "scssLint.configDir": "/Users/adam/"
 }
 ```
@@ -64,7 +64,7 @@ Known issues are tracked on github. Feel free to post them there or resolve some
 
 ## Release Notes
 
-### See the [CHANGELOG](CHANGELOG.md) for notes on each release.
+### See the [CHANGELOG](CHANGELOG.md) for notes on each release
 
 -----------------------------------------------------------------------------------------------------------
 
